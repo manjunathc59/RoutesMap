@@ -3,8 +3,11 @@ package com.intelliswift.mockApp.activity;
 import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -14,6 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.intelliswift.mockApp.R;
 import com.intelliswift.mockApp.adapter.ProfileEventDetails;
@@ -26,7 +30,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import android.widget.EditText;
 import static com.intelliswift.mockApp.config.Config.URL;
 
 public class RouteNameListActivity extends AppCompatActivity {
@@ -38,7 +42,7 @@ public class RouteNameListActivity extends AppCompatActivity {
     ProgressDialog pDialog;
     String url = URL;
     private LinearLayoutManager linearLayoutManager;
-
+     EditText et;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +70,8 @@ public class RouteNameListActivity extends AppCompatActivity {
         pDialog.setMessage("Loading...");
         pDialog.show();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+       StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+
             @Override
             public void onResponse(String response) {
                 if (response != null) {
@@ -124,9 +129,27 @@ public class RouteNameListActivity extends AppCompatActivity {
 
             }
         });
-        VolleyLog.DEBUG = true;
+                VolleyLog.DEBUG = true;
 
-        MySingleton.getmInstance(RouteNameListActivity.this).addToRequestQueue(stringRequest);
+       MySingleton.getmInstance(RouteNameListActivity.this).addToRequestQueue(stringRequest);
+        et = (EditText)findViewById(R.id.SearchRoute);
+        et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                String search = et.getText().toString();
+                mAdapter.getFilter().filter(search);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     @Override
@@ -146,4 +169,6 @@ public class RouteNameListActivity extends AppCompatActivity {
             pDialog = null;
         }
     }
+
+
 }
